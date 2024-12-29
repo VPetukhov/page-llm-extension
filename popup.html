@@ -1,0 +1,59 @@
+<!-- popup.html -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Ask ChatGPT</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        margin: 10px;
+      }
+      h1 {
+        font-size: 16px;
+        margin-bottom: 10px;
+      }
+      #question {
+        width: 100%;
+        margin-bottom: 5px;
+      }
+      #modelSelect {
+        margin-bottom: 5px;
+      }
+      #askBtn {
+        margin-bottom: 10px;
+      }
+      #response {
+        white-space: pre-wrap;
+        border: 1px solid #ccc;
+        padding: 8px;
+        border-radius: 4px;
+        max-height: 300px;
+        overflow-y: auto;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Ask ChatGPT About This Page</h1>
+
+    <label for="modelSelect">Model:</label>
+    <select id="modelSelect">
+      <option value="gpt-4o" selected>gpt-4o (Default)</option>
+      <option value="gpt-4o-mini">gpt-4o-mini</option>
+      <option value="o1">o1</option>
+      <option value="o1-mini">o1-mini</option>
+      <option value="o1-preview">o1-preview</option>
+    </select>
+    <br />
+
+    <textarea id="question" rows="3" placeholder="Enter your question here"></textarea>
+    <br />
+
+    <button id="askBtn">Ask ChatGPT</button>
+    <hr />
+
+    <div id="response">Response will appear here...</div>
+
+    <script src="popup.js"></script>
+  </body>
+</html>

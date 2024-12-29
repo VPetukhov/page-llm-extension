@@ -1,0 +1,29 @@
+{
+    "manifest_version": 2,
+    "name": "Send Page to ChatGPT",
+    "version": "1.0",
+    "description": "Scrapes the current page content, converts to Markdown, and sends it to ChatGPT along with a question.",
+
+    "permissions": [
+      "activeTab",
+      "storage",
+      "https://api.openai.com/*"
+    ],
+
+    "browser_action": {
+      "default_title": "Send to ChatGPT",
+      "default_popup": "popup.html"
+    },
+
+    "background": {
+      "scripts": ["background.js"]
+    },
+
+    "content_scripts": [
+      {
+        "matches": ["<all_urls>"],
+        "js": ["contentScript.js"],
+        "run_at": "document_end"
+      }
+    ]
+  }
