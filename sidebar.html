@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <script src="libs/marked.min.js"></script>
+    <script src="libs/purify.min.js"></script>
+    <style>
+        body {
+            width: 100%;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            user-select: text;
+            -moz-user-select: text;
+            -webkit-user-select: text;
+            font-size: 14px;
+            line-height: 1.25;
+        }
+        #header {
+            padding: 8px 16px;
+            border-bottom: 1px solid #ddd;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+        }
+        #clearButton {
+            background-color: #d70022;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            user-select: none;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+        }
+        #clearButton:hover {
+            background-color: #b1001c;
+        }
+        #chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+        }
+        .message {
+            margin-bottom: 12px;
+            max-width: 85%;
+            padding: 8px 12px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            cursor: text;
+        }
+        .markdown-content {
+            line-height: 1.0;
+        }
+        .markdown-content > *:first-child {
+            margin-top: 0;
+        }
+        .markdown-content > *:last-child {
+            margin-bottom: 0;
+        }
+        .markdown-content p {
+            margin: 0.2em 0;
+            line-height: 1.25;
+        }
+        .markdown-content pre {
+            background-color: rgba(0, 0, 0, 0.05);
+            padding: 0.5em;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 0.3em 0;
+            line-height: 0.0;
+        }
+        .markdown-content code {
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 0.9em;
+            background-color: rgba(0, 0, 0, 0.05);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+        }
+        .markdown-content pre code {
+            background-color: transparent;
+            padding: 0;
+        }
+        .markdown-content ul, .markdown-content ol {
+            margin: 0.3em 0;
+            padding-left: 1.5em;
+            line-height: 1;
+        }
+        .markdown-content li {
+            margin: 0;
+            padding: 0;
+            line-height: 1;
+        }
+        .markdown-content li p {
+            margin: 0;
+            padding: 0;
+            line-height: 1;
+        }
+        .markdown-content li + li {
+            margin-top: 0;
+        }
+        .markdown-content blockquote {
+            margin: 0.3em 0;
+            padding-left: 0.8em;
+            border-left: 3px solid #ddd;
+            color: #666;
+        }
+        .markdown-content h1, .markdown-content h2, 
+        .markdown-content h3, .markdown-content h4,
+        .markdown-content h5, .markdown-content h6 {
+            margin: 0.5em 0 0.3em;
+            line-height: 1.25;
+        }
+        .markdown-content h1 { font-size: 1.4em; }
+        .markdown-content h2 { font-size: 1.3em; }
+        .markdown-content h3 { font-size: 1.2em; }
+        .markdown-content h4 { font-size: 1.1em; }
+        .markdown-content h5, .markdown-content h6 { font-size: 1em; }
+        
+        .markdown-content a {
+            color: #0060df;
+            text-decoration: none;
+        }
+        .markdown-content a:hover {
+            text-decoration: underline;
+        }
+        .markdown-content img {
+            max-width: 100%;
+            height: auto;
+            margin: 0.3em 0;
+        }
+        .markdown-content table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 0.3em 0;
+            font-size: 0.9em;
+        }
+        .markdown-content th, .markdown-content td {
+            border: 1px solid #ddd;
+            padding: 0.3em 0.5em;
+            text-align: left;
+        }
+        .markdown-content th {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        .user-message {
+            background-color: #0060df;
+            color: white;
+            margin-left: auto;
+        }
+        .user-message pre, .user-message code {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+        .user-message a {
+            color: white;
+            text-decoration: underline;
+        }
+        .assistant-message {
+            background-color: #f0f0f0;
+            margin-right: auto;
+        }
+        .assistant-message pre, .assistant-message code {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+        .assistant-message a {
+            color: #0060df;
+            text-decoration: none;
+        }
+        .assistant-message a:hover {
+            text-decoration: underline;
+        }
+        .system-message {
+            background-color: #e0e0e0;
+            margin: 8px auto;
+            font-style: italic;
+            max-width: 60%;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        .error-message {
+            background-color: #ffd7d7;
+            color: #d70022;
+            margin: 8px auto;
+            max-width: 60%;
+            text-align: center;
+        }
+        #input-container {
+            padding: 12px;
+            border-top: 1px solid #ddd;
+            background: white;
+        }
+        #question {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            resize: vertical;
+            min-height: 40px;
+            max-height: 120px;
+            margin-bottom: 8px;
+            font-family: inherit;
+            font-size: inherit;
+            line-height: 1.25;
+        }
+        #sendButton {
+            background-color: #0060df;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            float: right;
+            user-select: none;
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            font-size: 13px;
+        }
+        #sendButton:hover {
+            background-color: #003eaa;
+        }
+        #sendButton:disabled {
+            background-color: #b1b1b1;
+            cursor: not-allowed;
+        }
+        #modelSelect {
+            padding: 4px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 12px;
+            background-color: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="header">
+        <select id="modelSelect">
+            <optgroup label="OpenAI">
+                <option value="gpt-4o" selected>gpt-4o (Default)</option>
+                <option value="gpt-4o-mini">gpt-4o-mini</option>
+                <option value="o1">o1</option>
+                <option value="o1-mini">o1-mini</option>
+                <option value="o1-preview">o1-preview</option>
+            </optgroup>
+            <optgroup label="Anthropic">
+                <option value="claude-3-5-sonnet-latest">Claude 3.5 Sonnet</option>
+                <option value="claude-3-5-haiku-latest">Claude 3.5 Haiku</option>
+            </optgroup>
+        </select>
+        <button id="clearButton">Clear History</button>
+    </div>
+    <div id="chat-container"></div>
+    <div id="input-container">
+        <textarea id="question" placeholder="Type your message..."></textarea>
+        <button id="sendButton">Send</button>
+    </div>
+    <script src="sidebar.js"></script>
+</body>
+</html>

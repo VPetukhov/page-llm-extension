@@ -2,17 +2,34 @@
     "manifest_version": 2,
     "name": "Send Page to ChatGPT",
     "version": "1.0",
-    "description": "Scrapes the current page content, converts to Markdown, and sends it to ChatGPT along with a question.",
+    "description": "Analyze web pages with ChatGPT and Claude in a convenient sidebar. Ask questions about the content, get summaries, and receive AI-powered insights. Features model selection (GPT-4, Claude), local storage for privacy, and persistent chat history. Use Alt+Y to toggle sidebar.",
 
     "permissions": [
       "activeTab",
       "storage",
-      "https://api.openai.com/*"
+      "tabs",
+      "<all_urls>"
     ],
 
-    "browser_action": {
+    "sidebar_action": {
       "default_title": "Send to ChatGPT",
-      "default_popup": "popup.html"
+      "default_panel": "sidebar.html",
+      "default_icon": "icon.png",
+      "open_at_install": true
+    },
+
+    "commands": {
+      "_execute_sidebar_action": {
+        "suggested_key": {
+          "default": "Ctrl+Alt+Y"
+        },
+        "description": "Toggle ChatGPT Sidebar"
+      }
+    },
+
+    "browser_action": {
+      "default_title": "Toggle ChatGPT Sidebar",
+      "default_icon": "icon.png"
     },
 
     "background": {
@@ -25,5 +42,12 @@
         "js": ["contentScript.js"],
         "run_at": "document_end"
       }
-    ]
-  }
+    ],
+
+    "options_ui": {
+      "page": "options.html",
+      "browser_style": true
+    },
+
+    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+}
